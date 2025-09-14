@@ -92,6 +92,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 MARKET_DATA_API_KEY = config('MARKET_DATA_API_KEY', default='')
 STOCK_API_KEY = config('STOCK_API_KEY', default='')
 NEWS_API_KEY = config('NEWS_API_KEY', default='')
+FINNHUB_API_KEY = config('FINNHUB_API_KEY', default='demo')
 
 
 # Password validation

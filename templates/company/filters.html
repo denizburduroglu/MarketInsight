@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}My Company Filters - Market Insights{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Company Filters</h2>
+            <a href="{% url 'create_filter' %}" class="btn btn-primary">Create New Filter</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if filters %}
+            <div class="row">
+                {% for filter in filters %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ filter.name }}</h5>
+                                <small class="text-muted">{{ filter.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-sm">
+                                    <div class="col-6">
+                                        {% if filter.exchange %}
+                                            <p><strong>Exchange:</strong> {{ filter.get_exchange_display }}</p>
+                                        {% endif %}
+                                        {% if filter.sector %}
+                                            <p><strong>Sector:</strong> {{ filter.get_sector_display }}</p>
+                                        {% endif %}
+                                        {% if filter.min_market_cap or filter.max_market_cap %}
+                                            <p><strong>Market Cap:</strong>
+                                                {% if filter.min_market_cap %}${{ filter.min_market_cap }}M{% endif %}
+                                                {% if filter.min_market_cap and filter.max_market_cap %} - {% endif %}
+                                                {% if filter.max_market_cap %}${{ filter.max_market_cap }}M{% endif %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-6">
+                                        {% if filter.min_price or filter.max_price %}
+                                            <p><strong>Price:</strong>
+                                                {% if filter.min_price %} ${{ filter.min_price }}{% endif %}
+                                                {% if filter.min_price and filter.max_price %} - {% endif %}
+                                                {% if filter.max_price %}${{ filter.max_price }}{% endif %}
+                                            </p>
+                                        {% endif %}
+                                        {% if filter.min_volume %}
+                                            <p><strong>Min Volume:</strong> {{ filter.min_volume|floatformat:0 }}</p>
+                                        {% endif %}
+                                        {% if filter.min_pe_ratio or filter.max_pe_ratio %}
+                                            <p><strong>P/E Ratio:</strong>
+                                                {% if filter.min_pe_ratio %}{{ filter.min_pe_ratio }}{% endif %}
+                                                {% if filter.min_pe_ratio and filter.max_pe_ratio %} - {% endif %}
+                                                {% if filter.max_pe_ratio %}{{ filter.max_pe_ratio }}{% endif %}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{% url 'apply_filter' filter.id %}" class="btn btn-success btn-sm">Apply Filter</a>
+                                <a href="{% url 'edit_filter' filter.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                <a href="{% url 'delete_filter' filter.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <h4>No filters created yet</h4>
+                <p class="text-muted">Create your first company filter to start finding companies that match your criteria.</p>
+                <a href="{% url 'create_filter' %}" class="btn btn-primary">Create Your First Filter</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

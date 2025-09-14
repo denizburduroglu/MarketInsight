@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ filter.name }} - Market Insights{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Edit Filter: {{ filter.name }}</h3>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Filter Name *</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.exchange.id_for_label }}" class="form-label">Exchange</label>
+                                {{ form.exchange }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.sector.id_for_label }}" class="form-label">Sector</label>
+                                {{ form.sector }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Market Cap (in millions USD)</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.min_market_cap.id_for_label }}" class="form-label">Minimum</label>
+                                {{ form.min_market_cap }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.max_market_cap.id_for_label }}" class="form-label">Maximum</label>
+                                {{ form.max_market_cap }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Stock Price</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.min_price.id_for_label }}" class="form-label">Minimum Price</label>
+                                {{ form.min_price }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.max_price.id_for_label }}" class="form-label">Maximum Price</label>
+                                {{ form.max_price }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Additional Criteria</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.min_volume.id_for_label }}" class="form-label">Minimum Volume</label>
+                                {{ form.min_volume }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.min_pe_ratio.id_for_label }}" class="form-label">Min P/E Ratio</label>
+                                {{ form.min_pe_ratio }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.max_pe_ratio.id_for_label }}" class="form-label">Max P/E Ratio</label>
+                                {{ form.max_pe_ratio }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'company_filters' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

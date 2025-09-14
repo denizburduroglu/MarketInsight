@@ -3,3 +3,5 @@ Django==5.2.6
 python-decouple==3.8
 sqlparse==0.5.3
 tzdata==2025.2
+finnhub-python==2.4.20
+requests==2.31.0

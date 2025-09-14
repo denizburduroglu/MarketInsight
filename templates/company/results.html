@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ filter.name }} Results - Market Insights{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>{{ filter.name }}</h2>
+                <p class="text-muted mb-0">Filter Results</p>
+            </div>
+            <div>
+                <a href="{% url 'edit_filter' filter.id %}" class="btn btn-outline-primary">Edit Filter</a>
+                <a href="{% url 'company_filters' %}" class="btn btn-secondary">Back to Filters</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if companies %}
+            <div class="mb-3">
+                <span class="badge bg-success">{{ companies|length }} companies found</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company Name</th>
+                            <th>Price</th>
+                            <th>Change</th>
+                            <th>Market Cap</th>
+                            <th>P/E Ratio</th>
+                            <th>Sector</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies %}
+                            <tr>
+                                <td>
+                                    <strong>{{ company.symbol }}</strong>
+                                    <small class="d-block text-muted">{{ company.exchange }}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if company.logo %}
+                                            <img src="{{ company.logo }}" alt="{{ company.symbol }}" class="me-2" style="width: 24px; height: 24px;">
+                                        {% endif %}
+                                        <div>
+                                            {{ company.name|truncatechars:40 }}
+                                            {% if company.weburl %}
+                                                <a href="{{ company.weburl }}" target="_blank" class="text-decoration-none">
+                                                    <i class="fas fa-external-link-alt small"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    ${{ company.price|floatformat:2 }}
+                                </td>
+                                <td>
+                                    {% if company.change >= 0 %}
+                                        <span class="text-success">
+                                            +${{ company.change|floatformat:2 }} (+{{ company.change_percent|floatformat:2 }}%)
+                                        </span>
+                                    {% else %}
+                                        <span class="text-danger">
+                                            ${{ company.change|floatformat:2 }} ({{ company.change_percent|floatformat:2 }}%)
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if company.market_cap %}
+                                        ${{ company.market_cap|floatformat:0 }}M
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if company.pe_ratio %}
+                                        {{ company.pe_ratio|floatformat:2 }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ company.sector|truncatechars:20 }}</small>
+                                </td>
+                                <td>
+                                    <a href="{% url 'save_company' company.symbol %}" class="btn btn-sm btn-outline-primary">
+                                        Save
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <h4>No companies found</h4>
+                <p class="text-muted">Try adjusting your filter criteria to find more companies.</p>
+                <a href="{% url 'edit_filter' filter.id %}" class="btn btn-primary">Edit Filter</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
