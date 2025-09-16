@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(python manage.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

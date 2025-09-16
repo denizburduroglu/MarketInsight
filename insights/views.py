@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django import forms
 from .models import CompanyFilter, SavedCompany
 from .services import FinnhubService
@@ -173,12 +174,24 @@ def apply_filter(request, filter_id):
 
     companies = []
     error_message = None
+    page_obj = None
 
     try:
         finnhub_service = FinnhubService()
-        companies = finnhub_service.filter_companies(filter_obj, limit=25)
+        companies = finnhub_service.filter_companies(filter_obj, limit=100)
 
-        if not companies:
+        if companies:
+            # Paginate the results
+            paginator = Paginator(companies, 10)  # Show 10 companies per page
+            page_number = request.GET.get('page')
+
+            try:
+                page_obj = paginator.get_page(page_number)
+            except PageNotAnInteger:
+                page_obj = paginator.get_page(1)
+            except EmptyPage:
+                page_obj = paginator.get_page(paginator.num_pages)
+        else:
             messages.info(request, 'No companies found matching your criteria. Try adjusting your filters.')
 
     except Exception as e:
@@ -187,7 +200,9 @@ def apply_filter(request, filter_id):
 
     context = {
         'filter': filter_obj,
-        'companies': companies,
+        'page_obj': page_obj,
+        'companies': page_obj.object_list if page_obj else [],
+        'total_results': len(companies) if companies else 0,
         'error_message': error_message
     }
     return render(request, 'company/results.html', context)
@@ -228,8 +243,23 @@ def save_company(request, symbol):
 @login_required
 def saved_companies(request):
     """Show user's saved companies"""
-    companies = SavedCompany.objects.filter(user=request.user)
-    return render(request, 'company/saved.html', {'companies': companies})
+    companies_list = SavedCompany.objects.filter(user=request.user)
+
+    # Paginate the results
+    paginator = Paginator(companies_list, 10)  # Show 10 companies per page
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
+    return render(request, 'company/saved.html', {
+        'companies': page_obj.object_list,
+        'page_obj': page_obj
+    })
 
 @login_required
 def remove_saved_company(request, company_id):

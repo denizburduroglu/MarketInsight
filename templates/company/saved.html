@@ -20,8 +20,22 @@
         {% endif %}
 
         {% if companies %}
-            <div class="mb-3">
-                <span class="badge bg-info">{{ companies|length }} saved companies</span>
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    {% if page_obj %}
+                        <span class="badge bg-info">{{ page_obj.paginator.count }} total saved companies</span>
+                        <span class="text-muted ms-2">
+                            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
+                        </span>
+                    {% else %}
+                        <span class="badge bg-info">{{ companies|length }} saved companies</span>
+                    {% endif %}
+                </div>
+                {% if page_obj %}
+                    <div class="text-muted">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="table-responsive">
@@ -73,6 +87,65 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Controls -->
+            {% if page_obj %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
         {% else %}
             <div class="text-center py-5">
                 <h4>No saved companies yet</h4>
